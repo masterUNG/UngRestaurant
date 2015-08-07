@@ -1,5 +1,7 @@
 package appewtc.masterung.ungrestaurant;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,10 +31,15 @@ public class MainActivity extends AppCompatActivity {
     private FoodTABLE objFoodTABLE;
     private OrderTABLE objOrderTABLE;
 
+    private EditText userEditText, passwordEditText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Initial Widget
+        initialWidget();
 
         //Connected SQLite
         connectedSQLite();
@@ -45,6 +54,72 @@ public class MainActivity extends AppCompatActivity {
         synJSONtoSQLite();
 
     }   // onCreate
+
+    public void clickLogin(View view) {
+
+        String strUser = userEditText.getText().toString().trim();
+        String strPassword = passwordEditText.getText().toString().trim();
+
+        //Check Zero
+        if (strUser.equals("") || strPassword.equals("") ) {
+            //Have Space
+            errorDialog("มีช่องว่าง", "กรุณากรอกให้ครบ ทุกช่อง คะ");
+        } else {
+            //No Space
+            checkUserPassword(strUser, strPassword);
+        }
+
+    }   // clickLogin
+
+    private void checkUserPassword(String strUser, String strPassword) {
+        try {
+            String[] strMyResult = objUserTABLE.searchUserPassword(strUser);
+            if (strPassword.equals(strMyResult[2])) {
+                //Password True
+                welcomeDialog(strMyResult[3]);
+            } else {
+                //Password False
+                errorDialog("Password False", "Please Try Again Password False");
+            }
+        } catch (Exception e) {
+            errorDialog("User False", "ไม่มี " + strUser + " ใน ฐานข้อมูลของเรา");
+        }
+    }   //checkUserPassword
+
+    private void welcomeDialog(String strName) {
+        AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
+        objBuilder.setIcon(R.drawable.restaurant);
+        objBuilder.setTitle("Welcome");
+        objBuilder.setMessage("ยินดีต้อนรับ " + strName + "\n" + "สู่ระบบของเรา");
+        objBuilder.setCancelable(false);
+        objBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        objBuilder.show();
+    }   //welcomDialog
+
+    private void errorDialog(String strTitle, String strMessage) {
+        AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
+        objBuilder.setIcon(R.drawable.icon_question);
+        objBuilder.setTitle(strTitle);
+        objBuilder.setMessage(strMessage);
+        objBuilder.setCancelable(false);
+        objBuilder.setPositiveButton("ตกลง", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        objBuilder.show();
+    }   // errofDialog
+
+    private void initialWidget() {
+        userEditText = (EditText) findViewById(R.id.editText);
+        passwordEditText = (EditText) findViewById(R.id.editText2);
+    }   // initialWidget
 
     private void deleteAllData() {
         SQLiteDatabase objSqLiteDatabase = openOrCreateDatabase
