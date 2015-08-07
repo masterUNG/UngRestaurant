@@ -2,6 +2,7 @@ package appewtc.masterung.ungrestaurant;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
@@ -23,6 +24,32 @@ public class FoodTABLE {
         writeSqLiteDatabase = objMySQLiteOpenHelper.getWritableDatabase();
         readSqLiteDatabase = objMySQLiteOpenHelper.getReadableDatabase();
     }   // Constructor
+
+    public String[] readAllFood(int intColumn) {
+        String[] strReadALL = null;
+        Cursor objCursor = readSqLiteDatabase.query(FOOD_TABLE,
+                new String[]{COLUMN_ID_FOOD, COLUMN_FOOD, COLUMN_SOURCE, COLUMN_PRICE},
+                null, null, null, null, null);
+        if (objCursor != null) {
+            objCursor.moveToFirst();
+            strReadALL = new String[objCursor.getCount()];
+            for (int i = 0; i <= objCursor.getCount(); i++) {
+                switch (intColumn) {
+                    case 1:
+                        strReadALL[i] = objCursor.getString(objCursor.getColumnIndex(COLUMN_FOOD));
+                        break;
+                    case 2:
+                        strReadALL[i] = objCursor.getString(objCursor.getColumnIndex(COLUMN_SOURCE));
+                        break;
+                    default:
+                        strReadALL[i] = objCursor.getString(objCursor.getColumnIndex(COLUMN_PRICE));
+                        break;
+                }
+                objCursor.moveToNext();
+            }
+        }
+        return strReadALL;
+    }
 
     public long addNewFood(String strFood, String strSource, String strPrice) {
         ContentValues objContentValues = new ContentValues();

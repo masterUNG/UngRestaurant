@@ -2,6 +2,7 @@ package appewtc.masterung.ungrestaurant;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }   //checkUserPassword
 
-    private void welcomeDialog(String strName) {
+    private void welcomeDialog(final String strName) {
         AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
         objBuilder.setIcon(R.drawable.restaurant);
         objBuilder.setTitle("Welcome");
@@ -95,7 +96,10 @@ public class MainActivity extends AppCompatActivity {
         objBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
+                Intent objIntent = new Intent(MainActivity.this, OrderActivity.class);
+                objIntent.putExtra("Officer", strName);
+                startActivity(objIntent);
+                finish();
             }
         });
         objBuilder.show();

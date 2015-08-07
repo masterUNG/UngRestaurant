@@ -9,5 +9,7 @@
     <string name="pass">Password :</string>
     <string name="login">Login</string>
     <string name="title_activity_order">OrderActivity</string>
+    <string name="menu">รายการอาหาร</string>
+    <string name="order">Order</string>
 
 </resources>
