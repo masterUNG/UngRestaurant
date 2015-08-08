@@ -11,5 +11,6 @@
     <string name="title_activity_order">OrderActivity</string>
     <string name="menu">รายการอาหาร</string>
     <string name="order">Order</string>
+    <string name="title_activity_confirm_order">ConfirmOrderActivity</string>
 
 </resources>

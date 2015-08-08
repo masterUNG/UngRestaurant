@@ -33,7 +33,7 @@ public class FoodTABLE {
         if (objCursor != null) {
             objCursor.moveToFirst();
             strReadALL = new String[objCursor.getCount()];
-            for (int i = 0; i <= objCursor.getCount(); i++) {
+            for (int i = 0; i < objCursor.getCount(); i++) {
                 switch (intColumn) {
                     case 1:
                         strReadALL[i] = objCursor.getString(objCursor.getColumnIndex(COLUMN_FOOD));
