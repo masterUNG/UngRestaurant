@@ -2,6 +2,7 @@ package appewtc.masterung.ungrestaurant;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -36,7 +37,10 @@ public class OrderActivity extends AppCompatActivity {
     }   // onCreate
 
     public void clickOrder(View view) {
-
+        Intent objIntent = new Intent(OrderActivity.this, ConfirmOrderActivity.class);
+        objIntent.putExtra("Officer", officerString);
+        objIntent.putExtra("Desk", deskString);
+        startActivity(objIntent);
     }
 
     private void showSpinner() {

@@ -2,6 +2,7 @@ package appewtc.masterung.ungrestaurant;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
@@ -24,6 +25,28 @@ public class OrderTABLE {
         readSqLiteDatabase = objMySQLiteOpenHelper.getReadableDatabase();
     }   // Constructor
 
+    public String[] readAllOrder(int intChoose) {
+
+        String[] strReadAll = null;
+        Cursor objCursor = readSqLiteDatabase.query(ORDER_TABLE,
+                new String[]{COLUMN_ID_ORDER, COLUMN_FOOD, COLUMN_ITEM},
+                null, null, null, null, null);
+        if (objCursor != null) {
+            objCursor.moveToFirst();
+            strReadAll = new String[objCursor.getCount()];
+            for (int i = 0; i < objCursor.getCount(); i++) {
+                if (intChoose == 1) {
+                    strReadAll[i] = objCursor.getString(objCursor.getColumnIndex(COLUMN_FOOD));
+                } else {
+                    strReadAll[i] = objCursor.getString(objCursor.getColumnIndex(COLUMN_ITEM));
+                }   // if
+                objCursor.moveToNext();
+            }   // for
+        }   // if
+        objCursor.close();
+        return strReadAll;
+    }   // readAllOrder
+
     public long addOrder(String strOfficer, String strDesk, String strFood, String strItem) {
         ContentValues objContentValues = new ContentValues();
         objContentValues.put(COLUMN_OFFICER, strOfficer);
@@ -31,6 +54,6 @@ public class OrderTABLE {
         objContentValues.put(COLUMN_FOOD, strFood);
         objContentValues.put(COLUMN_ITEM, strItem);
         return readSqLiteDatabase.insert(ORDER_TABLE, null, objContentValues);
-    }
+    }   // addOrder
 
 }   // Main Class
