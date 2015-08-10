@@ -33,7 +33,8 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="New Button"
+        android:text="Order Food"
+        android:onClick="clickOrderFood"
         android:id="@+id/button3"
         android:layout_alignParentBottom="true" />
 

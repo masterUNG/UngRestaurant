@@ -2,15 +2,28 @@ package appewtc.masterung.ungrestaurant;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
 
 public class ConfirmOrderActivity extends AppCompatActivity {
 
@@ -30,6 +43,48 @@ public class ConfirmOrderActivity extends AppCompatActivity {
         createListView();
     }   // onCreate
 
+    public void clickOrderFood(View view) {
+        OrderTABLE objOrderTABLE = new OrderTABLE(this);
+        String[] strFood = objOrderTABLE.readAllOrder(1);
+        String[] strItem = objOrderTABLE.readAllOrder(2);
+        for (int i = 0; i < strFood.length; i++) {
+
+            try {
+                //Setup New Policy
+                StrictMode.ThreadPolicy myPolicy = new StrictMode
+                        .ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(myPolicy);
+
+                ArrayList<NameValuePair> objNameValuePairs = new ArrayList<NameValuePair>();
+                objNameValuePairs.add(new BasicNameValuePair("isAdd", "true"));
+                objNameValuePairs.add(new BasicNameValuePair("Officer", officerString));
+                objNameValuePairs.add(new BasicNameValuePair("Desk", deskString));
+                objNameValuePairs.add(new BasicNameValuePair("Food", strFood[i]));
+                objNameValuePairs.add(new BasicNameValuePair("Item", strItem[i]));
+
+                HttpClient objHttpClient = new DefaultHttpClient();
+                HttpPost objHttpPost = new HttpPost("http://swiftcodingthai.com/23jul/add_data_restaurant.php");
+                objHttpPost.setEntity(new UrlEncodedFormEntity(objNameValuePairs, "UTF-8"));
+                objHttpClient.execute(objHttpPost);
+
+            } catch (Exception e) {
+                Toast.makeText(ConfirmOrderActivity.this,
+                        "Cannot Order Food", Toast.LENGTH_SHORT).show();
+            }   //try
+
+        }   //for
+
+        //Delete All Order
+        SQLiteDatabase objSqLiteDatabase = openOrCreateDatabase("Restaurant", MODE_PRIVATE, null);
+        objSqLiteDatabase.delete("orderTABLE", null, null);
+
+        Toast.makeText(ConfirmOrderActivity.this, "Order Finish", Toast.LENGTH_SHORT).show();
+        Intent objIntent = new Intent(ConfirmOrderActivity.this, OrderActivity.class);
+        objIntent.putExtra("Officer", officerString);
+        startActivity(objIntent);
+
+    }   // clickOrderFood
+
     private void createListView() {
         OrderTABLE objOrderTABLE = new OrderTABLE(this);
         String[] strFood = objOrderTABLE.readAllOrder(1);
@@ -47,13 +102,8 @@ public class ConfirmOrderActivity extends AppCompatActivity {
     private void editAndDeleteOrder(final int intPosition) {
         AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
         objBuilder.setIcon(R.drawable.restaurant);
-        objBuilder.setTitle("What do you wont ?");
-        objBuilder.setNegativeButton("Add Order", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                finish();
-            }
-        });
+        objBuilder.setTitle("Are you sure ?");
+        objBuilder.setMessage("Delete this Order ?");
         objBuilder.setPositiveButton("Delete Order", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
